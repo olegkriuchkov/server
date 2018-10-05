@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div>
+        <button id="get-authors">Get authors</button><br>
+        <button id="get-books">Get books</button>
+    </div>
+    <br>
+    <form id="book-form">
+        <input type="text" placeholder="title" datavalue="title"/><br>
+        <input type="text" placeholder="summary" datavalue="summary"/><br>
+        <select id="author-select" datavalue="author"></select><br>
+        <button>Create Book</button>
+    </form>
+    <br>
+    <form id="author-form">
+        <input type="text" placeholder="name" /><br>
+        <input type="text" placeholder="biography" /><br>
+        <input type="text" placeholder="twitter" /><br>
+        <input type="text" placeholder="facebook" /><br>
+        <input type="text" placeholder="linkedIn" /><br>
+        <button>Create Author</button>
+    </form>
+
+    <script>
+        const getAuthorsBtn = document.getElementById("get-authors");
+        const getBooksBtn = document.getElementById("get-books");
+        const bookForm = document.getElementById("book-form");
+        const authorForm = document.getElementById("author-form");
+
+        document.addEventListener("DOMContentLoaded", async function(){
+            const response = await fetch('http://localhost:3000/authors', {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+            const authorSelect = document.getElementById("author-select");
+            data.map((author, i) => {
+                let opt = document.createElement('option');
+                opt.innerHTML = author.name.firstname + ' ' + author.name.lastname;
+                authorSelect.appendChild(opt);
+            });
+        });
+
+        bookForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const body = {};
+            for(var i = 0; i < bookForm.elements.length-1; i++) {
+                body[bookForm.elements[i].attributes.datavalue.value] = bookForm.elements[i].value;
+            }
+            const respose = await fetch('http://localhost:3000/books', {
+                method: "POST",
+                body: JSON.stringify(body),
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+        };
+
+        authorForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const body = {};
+            for(var i = 0; i < authorForm.elements.length-1; i++) {
+                body[authorForm.elements[i].placeholder] = authorForm.elements[i].value;
+            }
+            const response = await fetch('http://localhost:3000/authors', {
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+        };
+
+        getAuthorsBtn.onclick = async () => {
+            const response = await fetch('http://localhost:3000/authors', {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+            console.log(data);
+        };
+
+        getBooksBtn.onclick = async () => {
+            const response = await fetch('http://localhost:3000/books', {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+            console.log(data);
+        }
+    </script>
+
+</body>
+</html>
